@@ -74,22 +74,28 @@ public class Employee {
 	}
 
 	public int getAnnualIncomeTax() {
-		LocalDate date = LocalDate.now();
-		if (date.getYear() == joiningDate.year) {
-			monthWorkingInYear = date.getMonthValue() - joiningDate.month;
-		} else {
-			monthWorkingInYear = 12;
-		}
-
-		boolean isSingle = (spouse == null);
+		int monthWorkingInYear = calculateMonthsWorkedThisYear();
+		boolean single = isSingle();
 		return TaxFunction.calculateTax(
 			monthlySalary,
 			otherMonthlyIncome,
 			monthWorkingInYear,
 			annualDeductible,
-			isSingle,
+			single,
 			children.size()
 		);
+	}
+
+	private int calculateMonthsWorkedThisYear() {
+		LocalDate now = LocalDate.now();
+		if (now.getYear() == joiningDate.year) {
+			return now.getMonthValue() - joiningDate.month;
+		}
+		return 12;
+	}
+	
+	private boolean isSingle() {
+		return spouse.idNumber == null || spouse.idNumber.isBlank();
 	}
 
 	private static class FullName {
